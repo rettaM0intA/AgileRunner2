@@ -45,13 +45,6 @@ public class chassisSubsystem extends SubsystemBase {
 
 
   public AHRS gyro = new AHRS(I2C.Port.kOnboard);
-  // ADXRS450_Gyro gyro = new ADXRS450_Gyro();
-
-  //
-  // DutyCycle fRPWMInput;
-  // DutyCycle fLPWMInput;
-  // DutyCycle bRPWMInput;
-  // DutyCycle bLPWMInput;
 
   //The angles I want the wheels to face in
   double fRAngle = 0;
@@ -71,11 +64,6 @@ public class chassisSubsystem extends SubsystemBase {
   // Declare the swervedrive math stuff from WPI
   SwerveDriveKinematics m_kinematics;
 
-  // public SpeedControllerGroup speedControllerGroupL = new SpeedControllerGroup(fLMovementMotor, bLMovementMotor);
-  // public SpeedControllerGroup speedControllerGroupR = new SpeedControllerGroup(fRMovementMotor, bRMovementMotor);
-
-  // public DifferentialDrive drive = new DifferentialDrive(speedControllerGroupL, speedControllerGroupR);
-
   /** Creates a new chassisSubsystem. */
   public chassisSubsystem() {
 
@@ -91,11 +79,6 @@ public class chassisSubsystem extends SubsystemBase {
 
   if(setPid){
     SetPIDController();
-    // fRAnalogEncoder.reset();
-    // fLAnalogEncoder.reset();
-    // bRAnalogEncoder.reset();
-    // bLAnalogEncoder.reset();
-    // gyro.calibrate();
   }
 
   m_kinematics = new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
@@ -119,9 +102,6 @@ public class chassisSubsystem extends SubsystemBase {
     }
 
     //The following if statements are to set controller deadzones.
-    // if(rotation < 0.005 && rotation > -0.005){
-    //   rotation = 0;
-    // }
     if(fwd < Constants.kDirectionalDeadzone && fwd > -Constants.kDirectionalDeadzone){
       fwd = 0;
     }
@@ -176,23 +156,11 @@ public class chassisSubsystem extends SubsystemBase {
     fRAngle = (frontRightOptimize.angle.getDegrees()) / Constants.kChassisSwerveOutputDegreeToNeoRotation;
     bLAngle = (backLeftOptimize.angle.getDegrees()) / Constants.kChassisSwerveOutputDegreeToNeoRotation;
     bRAngle = (backRightOptimize.angle.getDegrees()) / Constants.kChassisSwerveOutputDegreeToNeoRotation;
-    // fLAngle = (frontLeftOptimize.angle.getDegrees());
-    // fRAngle = (frontRightOptimize.angle.getDegrees());
-    // bLAngle = (backLeftOptimize.angle.getDegrees());
-    // bRAngle = (backRightOptimize.angle.getDegrees());
 
     fLgd = frontLeftOptimize.angle.getDegrees();
 
     //48 : 80 : 48 : 40
     //
-
-    // double movementMotorModifier;
-
-    // if(RobotContainer.fullSpeed){
-    //   movementMotorModifier = 1;
-    // }else{
-    //   movementMotorModifier = 3/10;
-    // }
 
     // Get the needed speed from the module state and convert it to the -1 to 1 value needed for percent output command of the CANTalon
     double frontLeftSpeed = frontLeftOptimize.speedMetersPerSecond * 3/10;
@@ -200,46 +168,16 @@ public class chassisSubsystem extends SubsystemBase {
     double backLeftSpeed = backLeftOptimize.speedMetersPerSecond * 3/10;
     double backRightSpeed = backRightOptimize.speedMetersPerSecond * 3/10;
 
-    // Set the angle of the TalonSRX to go to. This needs the PID to be set for the TalonSRX and tell it to go to that angle.
-    // fLrotationMotor.set(TalonSRXControlMode.Position, fLAngle);
-    // fRrotationMotor.set(TalonSRXControlMode.Position, fRAngle);
-    // bLrotationMotor.set(TalonSRXControlMode.Position, bLAngle);
-    // bLrotationMotor.set(TalonSRXControlMode.Position, bRAngle);
-    // fLrotationMotor.set(0);
-    // fRrotationMotor.set(0);
-    // bLrotationMotor.set(0);
-    // bRrotationMotor.set(0);
-
-    // double temporary;
-
-    // if(fLAngle > 270 && fLrotationMotor.getEncoder().getPosition() * Constants.kChassisSwerveOutputDegreeToNeoRotation < 90){
-    //   fLAngle = fLAngle - (360 / Constants.kChassisSwerveOutputDegreeToNeoRotation);
-    // }else if(fLAngle < 90 && fLrotationMotor.getEncoder().getPosition() * Constants.kChassisSwerveOutputDegreeToNeoRotation > 270){
-    //   fLAngle = fLAngle + (360 / Constants.kChassisSwerveOutputDegreeToNeoRotation);
-    // }
-    
     //The goal of these four uses of rotationOverflow is to have the wheels avoid a 350+ degree rotation
     rotationOverflow(fLrotationMotor, 0);
     rotationOverflow(fRrotationMotor, 1);
     rotationOverflow(bLrotationMotor, 2);
     rotationOverflow(bRrotationMotor, 3);
-
-    
-    
     
     fLrotationMotor.getPIDController().setReference(fLAngle, ControlType.kPosition);
     fRrotationMotor.getPIDController().setReference(fRAngle, ControlType.kPosition);
     bLrotationMotor.getPIDController().setReference(bLAngle, ControlType.kPosition);
     bRrotationMotor.getPIDController().setReference(bRAngle, ControlType.kPosition);
-    
-    // fLrotationMotor.getPIDController().setReference(TurnForever(fLrotationMotor, fLAngle), ControlType.kPosition);
-    // fRrotationMotor.getPIDController().setReference(TurnForever(fRrotationMotor, fRAngle), ControlType.kPosition);
-    // bLrotationMotor.getPIDController().setReference(TurnForever(bLrotationMotor, bLAngle), ControlType.kPosition);
-    // bRrotationMotor.getPIDController().setReference(TurnForever(bRrotationMotor, bRAngle), ControlType.kPosition);
-    
-
-
-
     
     // Set the speed in TalonFX to a percent output.
     fLDriveMotor.set(frontLeftSpeed);
@@ -300,7 +238,6 @@ public class chassisSubsystem extends SubsystemBase {
   public double TurnForever(CANSparkMax motor, double goalAngle){
 
     double convertedFrontLeftTo180s = motor.getEncoder().getPosition() * Constants.kChassisSwerveOutputDegreeToNeoRotation - 180;
-    // double convertedFrontLeftTo180s = (motor.getEncoder().getPosition() * Constants.kChassisSwerveOutputDegreeToNeoRotation - 180) + currentRotation * 360;
 
     SmartDashboard.putNumber("LookATME!", goalAngle);
     if((goalAngle < 0) && goalAngle + (currentRotation * 360) - 180 > convertedFrontLeftTo180s){
@@ -317,50 +254,7 @@ public class chassisSubsystem extends SubsystemBase {
 
   }
 
-  //This was a failure.  Attempted solution causes infinite loop where the motor will continously pass goal position and have the goal posision be set higher.
-  // public void rotatePastFull(CANSparkMax rotationMotor, int angleNumber){
-  //   double currentRotation = rotationMotor.getEncoder().getPosition() * Constants.kChassisSwerveOutputDegreeToNeoRotation;
-  //   SmartDashboard.putNumber("currentRotation", currentRotation);
-    
-  //   double goalAngle = 0;
-    
-  //   if(angleNumber == 0){
-  //     goalAngle = fLAngle * Constants.kChassisSwerveOutputDegreeToNeoRotation;
-  //   }else if(angleNumber == 1){
-  //     goalAngle = fRAngle * Constants.kChassisSwerveOutputDegreeToNeoRotation;
-  //   }else if(angleNumber == 2){
-  //     goalAngle = bLAngle * Constants.kChassisSwerveOutputDegreeToNeoRotation;
-  //   }else if(angleNumber == 3){
-  //     goalAngle = bRAngle * Constants.kChassisSwerveOutputDegreeToNeoRotation;
-  //   }
-    
-
-  //   if(currentRotation > 155 && goalAngle < 25){
-  //     if(currentRotation > 190){
-  //       rotationMotor.getEncoder().setPosition(currentRotation - 360);
-  //     }else{
-  //       goalAngle = goalAngle + 360;
-  //     }
-  //   }
-  //   if(currentRotation < -155 && goalAngle > 270){
-  //     if(currentRotation < -190){
-  //       rotationMotor.getEncoder().setPosition(currentRotation + 360);
-  //     }
-  //     goalAngle = goalAngle - 360;
-  //   }
-
-  //   if(angleNumber == 0){
-  //     fLAngle = goalAngle / Constants.kChassisSwerveOutputDegreeToNeoRotation;
-  //   }else if(angleNumber == 1){
-  //     fRAngle = goalAngle / Constants.kChassisSwerveOutputDegreeToNeoRotation;
-  //   }else if(angleNumber == 2){
-  //     bLAngle = goalAngle / Constants.kChassisSwerveOutputDegreeToNeoRotation;
-  //   }else if(angleNumber == 3){
-  //     bRAngle = goalAngle / Constants.kChassisSwerveOutputDegreeToNeoRotation;
-  //   }
-
-  // }
-
+  
   // Creates the PID controllers for all 4 rotation motors.  Should only ever be called once
   public void SetPIDController(){
 
@@ -413,50 +307,7 @@ public class chassisSubsystem extends SubsystemBase {
     bLDriveMotor.setSelectedSensorPosition(0);
   }
 
-  // public void LeftTurnReset(){
-
-  // }
-
-  //Do no use in current state.
-  // public void initSteerWheelEncoders(){
-
-  //   fRrotationMotor.getEncoder().setPosition(0);
-  //   fLrotationMotor.getEncoder().setPosition(0);
-  //   bRrotationMotor.getEncoder().setPosition(0);
-  //   bLrotationMotor.getEncoder().setPosition(0);
-
-  //   // get the value in degrees from the PWM input of 0-1
-
-  //   double fLDegree = fLrotationMotor.getEncoder().getPosition() / 66 * 360;
-  //   double fRDegree = fRrotationMotor.getEncoder().getPosition() / 66 * 360;
-  //   double bLDegree = bLrotationMotor.getEncoder().getPosition() / 66 * 360;
-  //   double bRDegree = bRrotationMotor.getEncoder().getPosition() / 66 * 360;
-
-  //   // set angle to be +/- 180
-
-  //   fLDegree = (fLDegree > 180.0) ? -(360 - fLDegree) : fLDegree;
-  //   fRDegree = (fRDegree > 180.0) ? -(360 - fRDegree) : fRDegree;
-  //   bLDegree = (bLDegree > 180.0) ? -(360 - bLDegree) : bLDegree;
-  //   bRDegree = (bRDegree > 180.0) ? -(360 - bRDegree) : bRDegree;
-
-  //   // subtract the straight ahead offset
-  //   // fLDegree -= Constants.kChassisFLAbsOffsetDeg;
-  //   // fRDegree -= Constants.kChassisFRAbsOffsetDeg;
-  //   // bLDegree -= Constants.kChassisBLAbsOffsetDeg;
-  //   // bRDegree -= Constants.kChassisBRAbsOffsetDeg;
-
-  //   // set the steerMotor position to the angle.  Encoder reading is 8192 per revolution
-  //   // fLrotationMotor.getEncoder().setPosition((fLDegree / 360 * 66) * Constants.kChassisSteerMotorGearRatio);
-  //   // fRrotationMotor.getEncoder().setPosition((fRDegree / 360 * 66) * Constants.kChassisSteerMotorGearRatio);
-  //   // bLrotationMotor.getEncoder().setPosition((bLDegree / 360 * 66) * Constants.kChassisSteerMotorGearRatio);
-  //   // bRrotationMotor.getEncoder().setPosition((bRDegree / 360 * 66) * Constants.kChassisSteerMotorGearRatio);
-
-
-    
-  //   // fLrotationMotor.getPIDController().setReference(1, ctrl)
-
-
-  // }
+  
 
   public double getChassisAngle(){
     return gyro.getAngle();
@@ -466,22 +317,7 @@ public class chassisSubsystem extends SubsystemBase {
     gyro.reset();
   }
 
-  //Do not use in current state.  Was code that attempted to make wheels face forward when the robot was initiated.
-  // public void wheelsFaceForward(){
-  //   double fRFixAngle = ((fRAnalogEncoder.get() - 1 - Constants.kChassisAbsoluteZerofR) * 90) / Constants.kChassisSwerveOutputDegreeToNeoRotation;
-  //   double fLFixAngle = ((fLAnalogEncoder.get() - 1 - Constants.kChassisAbsoluteZerofR) * 90) / Constants.kChassisSwerveOutputDegreeToNeoRotation;
-  //   double bRFixAngle = ((bRAnalogEncoder.get() - Constants.kChassisAbsoluteZerofR) * 90) / Constants.kChassisSwerveOutputDegreeToNeoRotation;
-  //   double bLFixAngle = ((bLAnalogEncoder.get() - Constants.kChassisAbsoluteZerofR) * 90) / Constants.kChassisSwerveOutputDegreeToNeoRotation;
   
-  //   fRrotationMotor.getEncoder().setPosition(fRFixAngle);
-  //   fLrotationMotor.getEncoder().setPosition(fLFixAngle);
-  //   bRrotationMotor.getEncoder().setPosition(bRFixAngle);
-  //   bLrotationMotor.getEncoder().setPosition(bLFixAngle);
-
-  //   driveTeleop(0,0,0);
-  // }
-  
-
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -509,11 +345,6 @@ public class chassisSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("BackLeftEncoder", bLAnalogEncoder.get());
     SmartDashboard.putNumber("BackRightEncoder", bRAnalogEncoder.get());
 
-    // SmartDashboard.putNumber("fR goal rotation", fRAngle * Constants.kChassisSwerveOutputDegreeToNeoRotation);
-    // SmartDashboard.putNumber("fL goal rotation", fLAngle * Constants.kChassisSwerveOutputDegreeToNeoRotation);
-    // SmartDashboard.putNumber("bR goal rotation", bRAngle * Constants.kChassisSwerveOutputDegreeToNeoRotation);
-    // SmartDashboard.putNumber("bL goal rotation", bLAngle * Constants.kChassisSwerveOutputDegreeToNeoRotation);
-
     SmartDashboard.putNumber("rotations traveled", (-fRDriveMotor.getSelectedSensorPosition() + fLDriveMotor.getSelectedSensorPosition() - bRDriveMotor.getSelectedSensorPosition() + bLDriveMotor.getSelectedSensorPosition()) / 4);
     SmartDashboard.putNumber("Fr", fRDriveMotor.getSelectedSensorPosition());
     SmartDashboard.putNumber("Fl", fLDriveMotor.getSelectedSensorPosition());
@@ -522,6 +353,5 @@ public class chassisSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Wheel power", fRDriveMotor.get());
 
     SmartDashboard.putNumber("RotateForeveroutput", TurnForever(fLrotationMotor, fLAngle));
-
   }
 }

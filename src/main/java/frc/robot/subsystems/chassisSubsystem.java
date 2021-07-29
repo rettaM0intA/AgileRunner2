@@ -85,6 +85,12 @@ public class chassisSubsystem extends SubsystemBase {
 
   }
 
+  /**
+   * This is the main driving function for the AgileRunner robot.
+   * @param fwd Percent forward.  Used to decide which direction the robot goes in with fwd
+   * @param strafe Percent strafe.  Used to decide which direction the robot goes in with fwd
+   * @param rotation Percent for rotating.  Will combine with the direction given by fwd and strafe to let the robot turn.
+   */
   public void driveTeleop(double fwd, double strafe, double rotation){
 
     if(RobotContainer.operator.getYButton()){
@@ -159,9 +165,6 @@ public class chassisSubsystem extends SubsystemBase {
 
     fLgd = frontLeftOptimize.angle.getDegrees();
 
-    //48 : 80 : 48 : 40
-    //
-
     // Get the needed speed from the module state and convert it to the -1 to 1 value needed for percent output command of the CANTalon
     double frontLeftSpeed = frontLeftOptimize.speedMetersPerSecond * 3/10;
     double frontRightSpeed = frontRightOptimize.speedMetersPerSecond * 3/10;
@@ -174,10 +177,18 @@ public class chassisSubsystem extends SubsystemBase {
     rotationOverflow(bLrotationMotor, 2);
     rotationOverflow(bRrotationMotor, 3);
     
+    //these lines tell the motor controller what poisition to set the motor to
     fLrotationMotor.getPIDController().setReference(fLAngle, ControlType.kPosition);
     fRrotationMotor.getPIDController().setReference(fRAngle, ControlType.kPosition);
     bLrotationMotor.getPIDController().setReference(bLAngle, ControlType.kPosition);
     bRrotationMotor.getPIDController().setReference(bRAngle, ControlType.kPosition);
+    
+
+    //WIP for replacing the avoidance method of infinite rotation with real infinite rotation.
+    // fLrotationMotor.getPIDController().setReference(TurnForever(fLrotationMotor, fLAngle), ControlType.kPosition);
+    // fRrotationMotor.getPIDController().setReference(TurnForever(fRrotationMotor, fRAngle), ControlType.kPosition);
+    // bLrotationMotor.getPIDController().setReference(TurnForever(bLrotationMotor, bLAngle), ControlType.kPosition);
+    // bRrotationMotor.getPIDController().setReference(TurnForever(bRrotationMotor, bRAngle), ControlType.kPosition);
     
     // Set the speed in TalonFX to a percent output.
     fLDriveMotor.set(frontLeftSpeed);
@@ -187,18 +198,11 @@ public class chassisSubsystem extends SubsystemBase {
 
   }
 
-  public void AutonNoTurnDrive(double degree, double frontLeftSpeed, double frontRightSpeed, double backLeftSpeed, double backRightSpeed){
-    fLrotationMotor.getPIDController().setReference(degree / Constants.kChassisSwerveOutputDegreeToNeoRotation, ControlType.kPosition);
-    fRrotationMotor.getPIDController().setReference(degree / Constants.kChassisSwerveOutputDegreeToNeoRotation, ControlType.kPosition);
-    bLrotationMotor.getPIDController().setReference(degree / Constants.kChassisSwerveOutputDegreeToNeoRotation, ControlType.kPosition);
-    bRrotationMotor.getPIDController().setReference(degree / Constants.kChassisSwerveOutputDegreeToNeoRotation, ControlType.kPosition);
-  
-    fLDriveMotor.set(frontLeftSpeed);
-    fRDriveMotor.set(-frontRightSpeed);
-    bLDriveMotor.set(backLeftSpeed);
-    bRDriveMotor.set(-backRightSpeed);
-  }
-
+  /**
+   * A function made to avoid going to 0 or 360 degrees in rotation.
+   * @param rotationMotor Used to check a motor's position to avoid doing a full rotation
+   * @param angleNumber input an integer based on which motor is being used.  FL = 0, FR = 1, BL = 2, BR = 3
+   */
   public void rotationOverflow(CANSparkMax rotationMotor, int angleNumber){
     double currentRotation = rotationMotor.getEncoder().getPosition() * Constants.kChassisSwerveOutputDegreeToNeoRotation;
     

@@ -25,19 +25,19 @@ import frc.robot.RobotContainer;
 
 public class chassisSubsystem extends SubsystemBase {
 
-  //Analog Encoders to reset the wheel toration
+  //Init Analog Encoders to help reset the wheel rotation
   public AnalogEncoder fRAnalogEncoder = new AnalogEncoder(new AnalogInput(2));
   public AnalogEncoder fLAnalogEncoder = new AnalogEncoder(new AnalogInput(0));
   public AnalogEncoder bRAnalogEncoder = new AnalogEncoder(new AnalogInput(3));
   public AnalogEncoder bLAnalogEncoder = new AnalogEncoder(new AnalogInput(1));
 
-  //The Falcon 500s that are in charge of spinning the wheels
+  //The Falcon 500s are in charge of spinning the wheels
   WPI_TalonFX fRDriveMotor = new WPI_TalonFX(6);
   WPI_TalonFX fLDriveMotor = new WPI_TalonFX(21);
   WPI_TalonFX bRDriveMotor = new WPI_TalonFX(11);
   WPI_TalonFX bLDriveMotor = new WPI_TalonFX(2);
 
-  //The Neo550s that are in charge of turning the wheels
+  //The Neo550s are in charge of rotating the wheels
   public CANSparkMax fRrotationMotor = new CANSparkMax(5, MotorType.kBrushless);
   public CANSparkMax fLrotationMotor = new CANSparkMax(20, MotorType.kBrushless);
   public CANSparkMax bRrotationMotor = new CANSparkMax(10, MotorType.kBrushless);
@@ -52,12 +52,19 @@ public class chassisSubsystem extends SubsystemBase {
   double bRAngle = 0;
   double bLAngle = 0;
   
+  //This angle is used to test functions.
   double testAngle = 0;
 
+  /*
+    Todo 
+    1 for each wheel
+    Revise turn forver method
+
+    Keeps track of how many rotations the wheek has made.
+  */
   int currentRotation = 1;
 
-  double fLgd;  //front left goal degree
-
+  // makes sure that the setPid method is only run once 
   boolean setPid = true;
 
 
@@ -163,7 +170,6 @@ public class chassisSubsystem extends SubsystemBase {
     bLAngle = (backLeftOptimize.angle.getDegrees()) / Constants.kChassisSwerveOutputDegreeToNeoRotation;
     bRAngle = (backRightOptimize.angle.getDegrees()) / Constants.kChassisSwerveOutputDegreeToNeoRotation;
 
-    fLgd = frontLeftOptimize.angle.getDegrees();
 
     // Get the needed speed from the module state and convert it to the -1 to 1 value needed for percent output command of the CANTalon
     double frontLeftSpeed = frontLeftOptimize.speedMetersPerSecond * 3/10;
@@ -185,6 +191,7 @@ public class chassisSubsystem extends SubsystemBase {
     
 
     //WIP for replacing the avoidance method of infinite rotation with real infinite rotation.
+    //Uses the turn forever method of going past full rotation.  Make sure to comment out rotationOverflow calls and the previous inputs to the rotation motors.
     // fLrotationMotor.getPIDController().setReference(TurnForever(fLrotationMotor, fLAngle), ControlType.kPosition);
     // fRrotationMotor.getPIDController().setReference(TurnForever(fRrotationMotor, fRAngle), ControlType.kPosition);
     // bLrotationMotor.getPIDController().setReference(TurnForever(bLrotationMotor, bLAngle), ControlType.kPosition);
@@ -239,6 +246,13 @@ public class chassisSubsystem extends SubsystemBase {
     
   }
 
+
+  /**
+   * Attempt at fixing the inablity to go past a full rotoation with the wheel
+   * @param motor the rotation moter
+   * @param goalAngle the angle that the rotoation moter should be at
+   * @return returns the new goal angle that will allow the rotation motors to go past a full rotation
+   */
   public double TurnForever(CANSparkMax motor, double goalAngle){
 
     double convertedFrontLeftTo180s = motor.getEncoder().getPosition() * Constants.kChassisSwerveOutputDegreeToNeoRotation - 180;
@@ -261,26 +275,26 @@ public class chassisSubsystem extends SubsystemBase {
   
   // Creates the PID controllers for all 4 rotation motors.  Should only ever be called once
   public void SetPIDController(){
-
-    
     fLrotationMotor.getEncoder().setPosition(0);
     fRrotationMotor.getEncoder().setPosition(0);
     bLrotationMotor.getEncoder().setPosition(0);
     bRrotationMotor.getEncoder().setPosition(0);
-      
-    // CANPIDController fLpid = fLrotationMotor.getPIDController();
+    
     fLrotationMotor.getPIDController().setP(0.105);
     fLrotationMotor.getPIDController().setI(0.0);
     fLrotationMotor.getPIDController().setFF(0);
     fLrotationMotor.getPIDController().setOutputRange(-0.5, 0.5);
+
     fRrotationMotor.getPIDController().setP(0.105);
     fRrotationMotor.getPIDController().setI(0.0);
     fRrotationMotor.getPIDController().setFF(0);
     fRrotationMotor.getPIDController().setOutputRange(-0.5, 0.5);
+
     bLrotationMotor.getPIDController().setP(0.105);
     bLrotationMotor.getPIDController().setI(0.0);
     bLrotationMotor.getPIDController().setFF(0);
     bLrotationMotor.getPIDController().setOutputRange(-0.5, 0.5);
+
     bRrotationMotor.getPIDController().setP(0.105);
     bRrotationMotor.getPIDController().setI(0.0);
     bRrotationMotor.getPIDController().setFF(0);
@@ -289,6 +303,9 @@ public class chassisSubsystem extends SubsystemBase {
     setPid = false; //Since the if statement that calls this function requires this boolean to be true, this prevents it from being rerun
   }
 
+  /**
+   * Makes the drive motors go in coast mode
+   */
   public void wheelBrakes(){
     fLDriveMotor.setNeutralMode(NeutralMode.Coast);
     fRDriveMotor.setNeutralMode(NeutralMode.Coast);
@@ -296,6 +313,9 @@ public class chassisSubsystem extends SubsystemBase {
     bRDriveMotor.setNeutralMode(NeutralMode.Coast);
   }
 
+  /**
+   * @return Average position of all 4 drive motors
+   */
   public double wheelMotorCountAverage(){
     return (
     -fRDriveMotor.getSelectedSensorPosition() +
@@ -304,6 +324,9 @@ public class chassisSubsystem extends SubsystemBase {
      bLDriveMotor.getSelectedSensorPosition())/ 4;
   }
 
+  /**
+   * Zeros all 4 drive motors
+   */
   public void zeroMotors(){
     fRDriveMotor.setSelectedSensorPosition(0);
     fLDriveMotor.setSelectedSensorPosition(0);
@@ -312,50 +335,63 @@ public class chassisSubsystem extends SubsystemBase {
   }
 
   
-
+  /**
+   * Get the chassis angle
+   */
   public double getChassisAngle(){
     return gyro.getAngle();
   }
 
+  /**
+   * Resets the gyro
+   */
   public void resetGyro(){
     gyro.reset();
   }
 
+  /**
+   * Calls all smartdashboard data placements
+   */
+  public void smartDashboardCall(){
+    // System.out.println(fLAnalogEncoder.get());
+
+    SmartDashboard.putNumber("FrontRightEncoder", fRAnalogEncoder.get());
+    SmartDashboard.putNumber("FrontLeftEncoder", fLAnalogEncoder.get());
+    SmartDashboard.putNumber("BackRightEncoder", bRAnalogEncoder.get());
+    SmartDashboard.putNumber("BackLeftEncoder", bLAnalogEncoder.get());
+    
+ 
+    SmartDashboard.putNumber("Gyro position", gyro.getAngle());
+     SmartDashboard.putData(gyro);
+     SmartDashboard.putBoolean("Gyro connected", gyro.isConnected());
+ 
+     SmartDashboard.putNumber("fR Rotation", fRrotationMotor.getEncoder().getPosition() / Constants.kChassisNeoMotorRotationPerWheelRotation * 360);
+     SmartDashboard.putNumber("fL Rotation", fLrotationMotor.getEncoder().getPosition() / Constants.kChassisNeoMotorRotationPerWheelRotation * 360);
+     SmartDashboard.putNumber("bR Rotation", bRrotationMotor.getEncoder().getPosition() / Constants.kChassisNeoMotorRotationPerWheelRotation * 360);
+     SmartDashboard.putNumber("bL Rotation", bLrotationMotor.getEncoder().getPosition() / Constants.kChassisNeoMotorRotationPerWheelRotation * 360);
+ 
+     SmartDashboard.putNumber("FrontLeftEncoder", fLAnalogEncoder.get());   
+     SmartDashboard.putNumber("FrontRightEncoder", fRAnalogEncoder.get());
+     SmartDashboard.putNumber("BackLeftEncoder", bLAnalogEncoder.get());
+     SmartDashboard.putNumber("BackRightEncoder", bRAnalogEncoder.get());
+ 
+     SmartDashboard.putNumber("rotations traveled", (-fRDriveMotor.getSelectedSensorPosition() + fLDriveMotor.getSelectedSensorPosition() - bRDriveMotor.getSelectedSensorPosition() + bLDriveMotor.getSelectedSensorPosition()) / 4);
+     SmartDashboard.putNumber("Fr", fRDriveMotor.getSelectedSensorPosition());
+     SmartDashboard.putNumber("Fl", fLDriveMotor.getSelectedSensorPosition());
+     SmartDashboard.putNumber("br", bRDriveMotor.getSelectedSensorPosition());
+     SmartDashboard.putNumber("bl", bLDriveMotor.getSelectedSensorPosition());
+     SmartDashboard.putNumber("Wheel power", fRDriveMotor.get());
+ 
+     SmartDashboard.putNumber("RotateForeveroutput", TurnForever(fLrotationMotor, fLAngle));
   
+  }
+
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    
-
-    // System.out.println(fLAnalogEncoder.get());
-
-   SmartDashboard.putNumber("FrontRightEncoder", fRAnalogEncoder.get());
-   SmartDashboard.putNumber("FrontLeftEncoder", fLAnalogEncoder.get());
-   SmartDashboard.putNumber("BackRightEncoder", bRAnalogEncoder.get());
-   SmartDashboard.putNumber("BackLeftEncoder", bLAnalogEncoder.get());
-   
-
-   SmartDashboard.putNumber("Gyro position", gyro.getAngle());
-    SmartDashboard.putData(gyro);
-    SmartDashboard.putBoolean("Gyro connected", gyro.isConnected());
-
-    SmartDashboard.putNumber("fR Rotation", fRrotationMotor.getEncoder().getPosition() / Constants.kChassisNeoMotorRotationPerWheelRotation * 360);
-    SmartDashboard.putNumber("fL Rotation", fLrotationMotor.getEncoder().getPosition() / Constants.kChassisNeoMotorRotationPerWheelRotation * 360);
-    SmartDashboard.putNumber("bR Rotation", bRrotationMotor.getEncoder().getPosition() / Constants.kChassisNeoMotorRotationPerWheelRotation * 360);
-    SmartDashboard.putNumber("bL Rotation", bLrotationMotor.getEncoder().getPosition() / Constants.kChassisNeoMotorRotationPerWheelRotation * 360);
-
-    SmartDashboard.putNumber("FrontLeftEncoder", fLAnalogEncoder.get());   
-    SmartDashboard.putNumber("FrontRightEncoder", fRAnalogEncoder.get());
-    SmartDashboard.putNumber("BackLeftEncoder", bLAnalogEncoder.get());
-    SmartDashboard.putNumber("BackRightEncoder", bRAnalogEncoder.get());
-
-    SmartDashboard.putNumber("rotations traveled", (-fRDriveMotor.getSelectedSensorPosition() + fLDriveMotor.getSelectedSensorPosition() - bRDriveMotor.getSelectedSensorPosition() + bLDriveMotor.getSelectedSensorPosition()) / 4);
-    SmartDashboard.putNumber("Fr", fRDriveMotor.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Fl", fLDriveMotor.getSelectedSensorPosition());
-    SmartDashboard.putNumber("br", bRDriveMotor.getSelectedSensorPosition());
-    SmartDashboard.putNumber("bl", bLDriveMotor.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Wheel power", fRDriveMotor.get());
-
-    SmartDashboard.putNumber("RotateForeveroutput", TurnForever(fLrotationMotor, fLAngle));
+    smartDashboardCall(); 
   }
+
+  
 }

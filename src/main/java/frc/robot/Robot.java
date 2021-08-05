@@ -5,16 +5,11 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commandGroups.TestCommand;
-import frc.robot.commands.AutoChassisMoveCommand;
-import frc.robot.commands.WheelsFaceForwardCommand;
-import frc.robot.subsystems.chassisSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -25,7 +20,7 @@ import frc.robot.subsystems.chassisSubsystem;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
-  private RobotContainer m_robotContainer;
+  public RobotContainer m_robotContainer;
 
   // public static chassisSubsystem sub_c = new chassisSubsystem();
 

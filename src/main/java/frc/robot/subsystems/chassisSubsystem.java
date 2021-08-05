@@ -176,26 +176,11 @@ public class chassisSubsystem extends SubsystemBase {
     double frontRightSpeed = frontRightOptimize.speedMetersPerSecond * 3/10;
     double backLeftSpeed = backLeftOptimize.speedMetersPerSecond * 3/10;
     double backRightSpeed = backRightOptimize.speedMetersPerSecond * 3/10;
-
-    //The goal of these four uses of rotationOverflow is to have the wheels avoid a 350+ degree rotation
-    rotationOverflow(fLrotationMotor, 0);
-    rotationOverflow(fRrotationMotor, 1);
-    rotationOverflow(bLrotationMotor, 2);
-    rotationOverflow(bRrotationMotor, 3);
     
-    //these lines tell the motor controller what poisition to set the motor to
-    fLrotationMotor.getPIDController().setReference(fLAngle, ControlType.kPosition);
-    fRrotationMotor.getPIDController().setReference(fRAngle, ControlType.kPosition);
-    bLrotationMotor.getPIDController().setReference(bLAngle, ControlType.kPosition);
-    bRrotationMotor.getPIDController().setReference(bRAngle, ControlType.kPosition);
-    
-
-    //WIP for replacing the avoidance method of infinite rotation with real infinite rotation.
-    //Uses the turn forever method of going past full rotation.  Make sure to comment out rotationOverflow calls and the previous inputs to the rotation motors.
-    // fLrotationMotor.getPIDController().setReference(TurnForever(fLrotationMotor, fLAngle), ControlType.kPosition);
-    // fRrotationMotor.getPIDController().setReference(TurnForever(fRrotationMotor, fRAngle), ControlType.kPosition);
-    // bLrotationMotor.getPIDController().setReference(TurnForever(bLrotationMotor, bLAngle), ControlType.kPosition);
-    // bRrotationMotor.getPIDController().setReference(TurnForever(bRrotationMotor, bRAngle), ControlType.kPosition);
+    fLrotationMotor.getPIDController().setReference(TurnForever(fLrotationMotor, fLAngle), ControlType.kPosition);
+    fRrotationMotor.getPIDController().setReference(TurnForever(fRrotationMotor, fRAngle), ControlType.kPosition);
+    bLrotationMotor.getPIDController().setReference(TurnForever(bLrotationMotor, bLAngle), ControlType.kPosition);
+    bRrotationMotor.getPIDController().setReference(TurnForever(bRrotationMotor, bRAngle), ControlType.kPosition);
     
     // Set the speed in TalonFX to a percent output.
     fLDriveMotor.set(frontLeftSpeed);

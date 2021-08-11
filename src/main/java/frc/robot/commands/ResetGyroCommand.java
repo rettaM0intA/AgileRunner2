@@ -19,6 +19,7 @@ public class ResetGyroCommand extends InstantCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    RobotContainer.m_chassisSubsystem.resetGyro();
+    // RobotContainer.m_chassisSubsystem.resetGyro();
+    RobotContainer.m_chassisSubsystem.gyro.reset();
   }
 }

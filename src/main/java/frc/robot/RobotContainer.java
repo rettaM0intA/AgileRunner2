@@ -7,11 +7,10 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.commandGroups.TestCommand;
 import frc.robot.commands.ChassisDefaultCommand;
 import frc.robot.commands.ControllerSwitchCommand;
-import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.SpinCommand;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.chassisSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -24,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  public static ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   public static chassisSubsystem m_chassisSubsystem = new chassisSubsystem();
 
   // private static ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
@@ -91,6 +89,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new ExampleCommand();
+    return new TestCommand();
   }
 }

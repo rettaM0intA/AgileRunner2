@@ -19,13 +19,20 @@ public class AutoChassisMoveCommand extends CommandBase {
   double distance = 1;
   double travelDistance = 0;
   boolean isInit = false;
-  boolean isFinished = false;
+  boolean isFinished = false; //boolean used to end the command.  is necessary since the isFinished function is called immediatly.
 
-  /** Creates a new AutoChassisCommand. */
+  /**
+   * 
+   * @param m_degree What direction you want to go in degrees
+   * @param m_speed How fast you want to move in percent
+   * @param m_distance How far the robot will travel in feet
+   * 
+   * Makes the chassis move in a desired direction at a desired speed.
+   */
   public AutoChassisMoveCommand(double m_degree, double m_speed, double m_distance) {
-    // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(RobotContainer.m_chassisSubsystem);
-    radians = ((m_degree + 90) * Math.PI / 180);
+
+    radians = ((m_degree + 90) * Math.PI / 180); //The math requires radians, so ranslate degree input to radians
     speed = m_speed;
     distance = m_distance;
   }
@@ -45,6 +52,7 @@ public class AutoChassisMoveCommand extends CommandBase {
 
     travelDistance = RobotContainer.m_chassisSubsystem.wheelMotorCountAverage() / Constants.kChassisEstimatedRotationsToInches;
 
+    //The following if statements are used to keep the robot facing a single direction
     if(fwd < -0.5 || fwd > 0.5 || strafe < -0.5 || strafe > 0.5){
       if(RobotContainer.m_chassisSubsystem.gyro.getAngle() < 0){
         if(rotate < 0){
@@ -85,13 +93,17 @@ public class AutoChassisMoveCommand extends CommandBase {
       }
     }
 
+    //Math to translate given speed and direction into usable percentages.
     fwd = (Math.sin(radians) / 100) * speed;
     strafe = (Math.cos(radians) / 100) * speed;
 
+    //input the numbers into the drive command so the robot moves as planned
     RobotContainer.m_chassisSubsystem.driveTeleop(fwd, strafe, rotate);
 
-    SmartDashboard.putNumber("distancetraveld", travelDistance);
+    //used to track the distance traveled so the user can verify accuracy.
+    SmartDashboard.putNumber("distancetraveled", travelDistance); //distancetraveled = travelDistance.  Do you understand?
     
+    //these if statements decide if the command is over.  if it is, then isFinished boolean becomes true
     if(distance != 0){
       if(Math.abs(travelDistance) > Math.abs(distance)){
         RobotContainer.m_chassisSubsystem.driveTeleop(0, 0, 0);
@@ -114,14 +126,13 @@ public class AutoChassisMoveCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // if(isInit){
-      if(isFinished){
-        isFinished = false;
-        RobotContainer.m_chassisSubsystem.driveTeleop(0, 0, 0);
-        RobotContainer.m_chassisSubsystem.zeroMotors();
-        return true;
-      }
-    // }
+    if(isFinished){
+      //this is done to ensure the next command doesn't immediatly end.
+      isFinished = false;
+      RobotContainer.m_chassisSubsystem.driveTeleop(0, 0, 0);
+      RobotContainer.m_chassisSubsystem.zeroMotors();
+      return true;
+    }
     return false;
   }
 }

@@ -7,7 +7,6 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class WheelsFaceForwardCommand extends CommandBase {
-  /** Creates a new WheelsFaceForwardCommand. */
 
   double fRSetAngle;
   double fLSetAngle;
@@ -16,6 +15,9 @@ public class WheelsFaceForwardCommand extends CommandBase {
 
   boolean firstRunHappened = false;
 
+  /**
+   * Unfinished command that will cause the wheels to face towards the front of the robot.  Used before a match or at the beginning of autonomous mode although before is prefered.
+   */
   public WheelsFaceForwardCommand() {
     // Use addRequirements() here to declare subsystem dependencies.
     // addRequirements(RobotContainer.m_chassisSubsystem);

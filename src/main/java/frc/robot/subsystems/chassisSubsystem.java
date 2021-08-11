@@ -353,7 +353,6 @@ public class chassisSubsystem extends SubsystemBase {
    * Calls all smartdashboard data placements
    */
   public void smartDashboardCall(){
-    // System.out.println(fLAnalogEncoder.get());
 
     SmartDashboard.putNumber("FrontRightEncoder", fRAnalogEncoder.get());
     SmartDashboard.putNumber("FrontLeftEncoder", fLAnalogEncoder.get());

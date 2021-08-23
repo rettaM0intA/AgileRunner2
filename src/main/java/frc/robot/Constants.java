@@ -43,7 +43,9 @@ public final class Constants {
 	public static final double kChassisOutputDriveGearToInputGear = 40;
 	public static final double kChassisNeoMotorRotationPerWheelRotation = kChassisNeoToGearbox / kChassisGearboxToOutputGear * kChassisOutputDriveGearToInputGear;
 	public static final double kChassisNeoMotorRotationtoRadians = kChassisNeoMotorRotationPerWheelRotation * Math.PI;
-
+	
+	//This is used to lower the speed of the drive motors to reasonable values
+	public static final double kChassisMotorSpeedLower = 5.67;
 	
 	public static final double kChassisSwerveOutputDegreeToNeoRotation = 360 / kChassisNeoMotorRotationPerWheelRotation;	//5.4000054000054
 

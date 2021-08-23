@@ -12,7 +12,9 @@ import frc.robot.commands.ResetGyroCommand;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class TestCommand extends SequentialCommandGroup {
-  /** Creates a new TestCommand. */
+  /**
+   * Creates a new TestCommand.  This is meant to test commands for Autonomous mode.  Do not use this as an actual CommandGroup for competition.
+   */
   public TestCommand() {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());

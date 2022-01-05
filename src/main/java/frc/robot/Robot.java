@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commandGroups.Auton_1;
+import frc.robot.commandGroups.Auton_2;
 import frc.robot.commandGroups.TestCommand;
 
 /**
@@ -26,7 +28,7 @@ public class Robot extends TimedRobot {
 
   // public static XboxController driver = new XboxController(0);
 
-  SendableChooser<Command> m_chooser = new SendableChooser<>();
+ public static SendableChooser<Command> m_chooser = new SendableChooser<>();
   
 
 
@@ -40,7 +42,9 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
 
-    m_chooser.setDefaultOption("test", new TestCommand());
+    m_chooser.setDefaultOption("auton", new Auton_1());
+    m_chooser.addOption("test", new TestCommand());
+    m_chooser.addOption("auton_2", new Auton_2());
     // m_chooser.addOption(name, object);
 
     SmartDashboard.putData(m_chooser);

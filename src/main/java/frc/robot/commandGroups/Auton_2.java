@@ -6,29 +6,19 @@ package frc.robot.commandGroups;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.AutoChassisMoveCommand;
-import frc.robot.commands.AutoChassisSpinCommand;
 import frc.robot.commands.ResetGyroCommand;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class TestCommand extends SequentialCommandGroup {
-  /**
-   * Creates a new TestCommand.  This is meant to test commands for Autonomous mode.  Do not use this as an actual CommandGroup for competition.
-   */
-  public TestCommand() {
+public class Auton_2 extends SequentialCommandGroup {
+  /** Creates a new Auton_2. */
+  public Auton_2() {
     // Add your commands in the addCommands() call, e.g.
+    // addCommands(new FooCommand(), new BarCommand());
     addCommands(new ResetGyroCommand());
-    
-    addCommands(new AutoChassisMoveCommand(0, 50, 60));
-    addCommands(new AutoChassisMoveCommand(0, 10, 10));
-
+    addCommands(new AutoChassisMoveCommand(0, 30, 48));
     addCommands(new ResetGyroCommand());
-
-    addCommands(new AutoChassisMoveCommand(180, 20, 24));
-    addCommands(new AutoChassisMoveCommand(90, 50, 100));
-    addCommands(new AutoChassisSpinCommand(-90, 0.3));
-
-    addCommands(new ResetGyroCommand());
+    addCommands(new AutoChassisMoveCommand(90, 30, -48));
   }
 }

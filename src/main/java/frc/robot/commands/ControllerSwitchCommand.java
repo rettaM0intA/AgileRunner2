@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.ControllerInControl;
 import frc.robot.RobotContainer;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -18,6 +19,11 @@ public class ControllerSwitchCommand extends InstantCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    RobotContainer.gamepadDriver = !RobotContainer.gamepadDriver;
+    if(RobotContainer.gamepadDriver == ControllerInControl.flightStick){
+
+      RobotContainer.gamepadDriver = ControllerInControl.gamepad;
+    }else{
+      RobotContainer.gamepadDriver = ControllerInControl.flightStick;
+    }
   }
 }

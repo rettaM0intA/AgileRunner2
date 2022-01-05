@@ -15,7 +15,7 @@ package frc.robot;
 public final class Constants {
 
 
-	public static final double kDirectionalDeadzone = 0.01;
+	public static final double kDirectionalDeadzone = 0.02;
     public static final double kFwd_MetersPerSecPerNom = 1;
 	public static final double kStrafe_MetersPerSecPerNom = 0;
 	public static final double kRotation_RadiansPerSecPerNom = 0;

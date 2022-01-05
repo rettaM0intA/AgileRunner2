@@ -32,7 +32,7 @@ public class AutoChassisMoveCommand extends CommandBase {
   public AutoChassisMoveCommand(double m_degree, double m_speed, double m_distance) {
     addRequirements(RobotContainer.m_chassisSubsystem);
 
-    radians = ((m_degree + 90) * Math.PI / 180); //The math requires radians, so ranslate degree input to radians
+    radians = ((m_degree + 90) * Math.PI / 180); //The math requires radians, so translate degree input to radians
     speed = m_speed;
     distance = m_distance;
   }
@@ -50,6 +50,7 @@ public class AutoChassisMoveCommand extends CommandBase {
   @Override
   public void execute() {
 
+    //Calculates roughly how far the robot has traveled in inches.
     travelDistance = RobotContainer.m_chassisSubsystem.wheelMotorCountAverage() / Constants.kChassisEstimatedRotationsToInches;
 
     //The following if statements are used to keep the robot facing a single direction
@@ -93,12 +94,19 @@ public class AutoChassisMoveCommand extends CommandBase {
       }
     }
 
+    /*
+    *   TODO
+    *   USE GITHUB!!!!!
+    *   MAKE TODO LIST
+    */
+
+
     //Math to translate given speed and direction into usable percentages.
     fwd = (Math.sin(radians) / 100) * speed;
     strafe = (Math.cos(radians) / 100) * speed;
 
     //input the numbers into the drive command so the robot moves as planned
-    RobotContainer.m_chassisSubsystem.driveTeleop(fwd, strafe, rotate);
+    RobotContainer.m_chassisSubsystem.driveAuton(fwd, strafe, rotate);
 
     //used to track the distance traveled so the user can verify accuracy.
     SmartDashboard.putNumber("distancetraveled", travelDistance); //distancetraveled = travelDistance.  Do you understand?
@@ -106,13 +114,13 @@ public class AutoChassisMoveCommand extends CommandBase {
     //these if statements decide if the command is over.  if it is, then isFinished boolean becomes true
     if(distance != 0){
       if(Math.abs(travelDistance) > Math.abs(distance)){
-        RobotContainer.m_chassisSubsystem.driveTeleop(0, 0, 0);
+        RobotContainer.m_chassisSubsystem.driveAuton(0, 0, 0);
         isFinished = true;
       }else{
         isFinished = false;
       }
     }else{
-      RobotContainer.m_chassisSubsystem.driveTeleop(0, 0, 0);
+      RobotContainer.m_chassisSubsystem.driveAuton(0, 0, 0);
       isFinished = true;
     }
   }
@@ -120,7 +128,7 @@ public class AutoChassisMoveCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    RobotContainer.m_chassisSubsystem.driveTeleop(0, 0, 0);
+    RobotContainer.m_chassisSubsystem.driveAuton(0, 0, 0);
   }
 
   // Returns true when the command should end.
@@ -129,7 +137,7 @@ public class AutoChassisMoveCommand extends CommandBase {
     if(isFinished){
       //this is done to ensure the next command doesn't immediatly end.
       isFinished = false;
-      RobotContainer.m_chassisSubsystem.driveTeleop(0, 0, 0);
+      RobotContainer.m_chassisSubsystem.driveAuton(0, 0, 0);
       RobotContainer.m_chassisSubsystem.zeroMotors();
       return true;
     }

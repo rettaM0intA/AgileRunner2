@@ -4,13 +4,13 @@
 
 package frc.robot;
 
+import frc.robot.commandGroups.Auton_1;
+import frc.robot.commandGroups.TestCommand;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.commandGroups.TestCommand;
 import frc.robot.commands.ChassisDefaultCommand;
 import frc.robot.commands.ControllerSwitchCommand;
-import frc.robot.commands.SpinCommand;
 import frc.robot.subsystems.chassisSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+
   // The robot's subsystems and commands are defined here...
   public static chassisSubsystem m_chassisSubsystem = new chassisSubsystem();
 
@@ -33,7 +34,7 @@ public class RobotContainer {
   public static Joystick driver = new Joystick(0);
   public static XboxController operator = new XboxController(1);
 
-  public static boolean gamepadDriver = false;
+  public static ControllerInControl gamepadDriver = ControllerInControl.flightStick;
 
   public static boolean fullSpeed = false;
 
@@ -60,7 +61,7 @@ public class RobotContainer {
     JoystickButton joyControllSwitchButton = new JoystickButton(driver, 6);
     joyControllSwitchButton.whenPressed(new ControllerSwitchCommand());
 
-    if(gamepadDriver){
+    if(gamepadDriver == ControllerInControl.gamepad){
       // JoystickButton padSpinButton = new JoystickButton(operator, 2);
       // padSpinButton.whenActive(new SpinCommand());
       // JoystickButton padGyroSet0Button = new JoystickButton(operator, 2);
@@ -69,8 +70,6 @@ public class RobotContainer {
 
       fullSpeed = false;
     }else{
-      JoystickButton joySpinButton = new JoystickButton(driver, 1);
-      joySpinButton.whenActive(new SpinCommand());
       // JoystickButton joyGyroSet0Button = new JoystickButton(driver, 9);
       // joyGyroSet0Button.whenPressed(new GyroSet0Command());
 
@@ -89,6 +88,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new TestCommand();
+    //return new TestCommand();
+    return Robot.m_chooser.getSelected();
   }
 }

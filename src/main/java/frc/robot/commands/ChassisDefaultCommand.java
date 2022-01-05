@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.ControllerInControl;
 import frc.robot.RobotContainer;
 
 public class ChassisDefaultCommand extends CommandBase {
@@ -25,7 +26,7 @@ public class ChassisDefaultCommand extends CommandBase {
   @Override
   public void execute() {
     //Checks which controller is currently driver
-    if(RobotContainer.gamepadDriver){
+    if(RobotContainer.gamepadDriver == ControllerInControl.gamepad){
     //XBox controller
     RobotContainer.m_chassisSubsystem.driveTeleop(-RobotContainer.operator.getY(Hand.kLeft), -RobotContainer.operator.getX(Hand.kLeft), -RobotContainer.operator.getX(Hand.kRight)*.25);
     }else{
@@ -38,8 +39,8 @@ public class ChassisDefaultCommand extends CommandBase {
   }
 
   // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {}
+  //@Override
+  //public void end(Boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
